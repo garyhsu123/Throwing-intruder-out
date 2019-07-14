@@ -288,7 +288,7 @@ public class newai : MonoBehaviour
                     //behavior_switch = true;
                 //}///
                     
-                gameControl.changeAttack();
+                gameControl.changeAttack(Role.player);
                 gameControl.resetTimer();
                 ai_current_behavior = behavior.noneThing;
             }

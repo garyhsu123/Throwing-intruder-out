@@ -11,7 +11,8 @@ public enum Role
 }
 public class GameController : Photon.PunBehaviour
 {
-
+    Role[] all_player = new Role[]{ Role.player, Role.computer };
+    Role RoleInThisCP;
     private static GameController _instance;
 
     public Texture[] roundtimer;
@@ -31,6 +32,8 @@ public class GameController : Photon.PunBehaviour
     #region GameMaterials
     public AudioClip getpropVoice;
     public AudioClip hurtVoice;
+   
+  
     public Slider[] slider_player_health;
     public GameObject[] bulletPrefab;
     #endregion
@@ -112,34 +115,52 @@ public class GameController : Photon.PunBehaviour
         PhotonNetwork.LeaveRoom();
     }
 
-    public Role GetRole(ref GameObject bullet,ref Slider slider,ref string other_player_tag)
+    public Role GetRole(GameObject player,ref string other_player_bullet,ref GameObject bullet,ref Slider slider, int player_ID = -1)
     {
         Debug.Log("player_num: " + PhotonNetwork.room.PlayerCount);
-        if (PhotonNetwork.room.PlayerCount == 1)
+        if(player_ID == -1)
         {
-            
-            slider = slider_player_health[0];
-            bullet = bulletPrefab[0];
-            other_player_tag = "enemyBullet";
+            if(PhotonNetwork.room.PlayerCount == 1)
+            {
+                RoleInThisCP = Role.player;
+                player_ID = 0;
+            }
+            else if (PhotonNetwork.room.PlayerCount == 2)
+            {
+                RoleInThisCP = Role.computer;
+                player_ID = 1;
+            }
+        }
+
+        if (player_ID == 0)
+        {
+            player.tag = "Player";
+            slider = slider_player_health[player_ID];
+            bullet = bulletPrefab[player_ID];
+            other_player_bullet = "enemyBullet";
 
 
             return Role.player;
-        }else
+        }
+        else if(player_ID == 1)
         {
-            slider = slider_player_health[1];
-            bullet = bulletPrefab[1];
-            other_player_tag = "bullet";
+            player.tag = "computer";
+            slider = slider_player_health[player_ID];
+            bullet = bulletPrefab[player_ID];
+            other_player_bullet = "bullet";
             return Role.computer;
         }
+        return Role.finish;
     }
     
     public void dead(Role whoDead)
     {
-        if(whoDead == Role.player)
+        if(whoDead == RoleInThisCP)
         {
             playerLife = false;
             gameText.text = "You Lose!";
             gameText.enabled = true;
+
             if (currentlevel == level.level1)
             {
                 but.text = "Again !";
@@ -151,7 +172,7 @@ public class GameController : Photon.PunBehaviour
             }
 
         }
-        else if(whoDead == Role.computer)
+        else 
         {
             computerLife = false;
             gameText.text = "You Win !";
@@ -178,14 +199,15 @@ public class GameController : Photon.PunBehaviour
     {
         return computerLife;
     }
-    public void changeAttack()
+    public void changeAttack(Role cur)
     {
         if (playerLife && computerLife)
         {
-            if (round == Role.player)
+            if (cur == Role.player)
                 round = Role.computer;
             else
                 round = Role.player; 
+            
         }
         else
         {
@@ -250,7 +272,7 @@ public class GameController : Photon.PunBehaviour
         if (index == 0)
         {   
             resetTimer();
-            changeAttack();
+            changeAttack(round);
         }
 
 

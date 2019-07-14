@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using System;
 using UnityEngine;
 
-public class platform_move : MonoBehaviour {
+public class platform_move : Photon.MonoBehaviour
+{
 
 
 
 
-
+        [SerializeField]
         float speed;
 
 
@@ -17,8 +18,13 @@ public class platform_move : MonoBehaviour {
         // Use this for initialization
         void Start()
         {
-            speed = UnityEngine.Random.Range(300, 800);
-            speed = speed / 1000;
+            if (PhotonNetwork.isMasterClient)
+            {
+                speed = UnityEngine.Random.Range(300, 800);
+                speed = speed / 1000;
+                photonView.RPC("SetSpeed",PhotonTargets.AllBuffered,speed);
+            }
+     
         }
 
         public float getSpeed()
@@ -29,15 +35,24 @@ public class platform_move : MonoBehaviour {
         void Update()
         {
 
+        if (PhotonNetwork.isMasterClient)
+        {
             transform.Translate(new Vector3(1 * speed, 0, 0));
-        
+
             x += Math.Abs(speed);
             if (x >= 300)
             {
-                speed = 0 - speed;
+                
+                photonView.RPC("SetSpeed", PhotonTargets.AllBuffered, -speed);
                 x = 0;
             }
+        }
 
 
+        }
+        [PunRPC]
+        void SetSpeed(float sp)
+        {
+            speed = sp;
         }
     }

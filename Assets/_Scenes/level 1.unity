@@ -917,6 +917,8 @@ GameObject:
   m_Component:
   - component: {fileID: 44895787}
   - component: {fileID: 44895786}
+  - component: {fileID: 44895789}
+  - component: {fileID: 44895788}
   m_Layer: 8
   m_Name: platform2
   m_TagString: Untagged
@@ -935,6 +937,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a77d4826dac07f5428e5ea5234c78c8e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  speed: 0
 --- !u!4 &44895787
 Transform:
   m_ObjectHideFlags: 0
@@ -949,6 +952,43 @@ Transform:
   m_Father: {fileID: 311019145}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &44895788
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 44895785}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3f8450f0782862c43b0d536f38d95034, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &44895789
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 44895785}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ownerId: 0
+  group: 0
+  OwnerShipWasTransfered: 0
+  prefixBackup: -1
+  synchronization: 3
+  onSerializeTransformOption: 3
+  onSerializeRigidBodyOption: 2
+  ownershipTransfer: 0
+  ObservedComponents:
+  - {fileID: 44895788}
+  ObservedComponentsFoldoutOpen: 1
+  viewIdField: 3
+  instantiationId: 3
+  currentMasterID: -1
+  isRuntimeInstantiated: 0
 --- !u!1 &52535901 stripped
 GameObject:
   m_PrefabParentObject: {fileID: 103248, guid: bde94b3fba3cee64eb6317dcef7be661, type: 2}
@@ -3762,7 +3802,7 @@ RectTransform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 193369756}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 270.5, y: 161.5, z: 0}
+  m_LocalPosition: {x: 239.5, y: 192.5, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 1691999640}
@@ -4596,8 +4636,11 @@ MonoBehaviour:
   HPprop2: {fileID: 1000013191416304, guid: c48a3ebf277ae9f46bc06489f5850636, type: 2}
   Ballprop1: {fileID: 100000, guid: c20e20955b51aeb478a3cea9301948fc, type: 2}
   Ballprop2: {fileID: 111078, guid: 038c874aea1642e47baca1d90b641841, type: 2}
-  Ballprop3: {fileID: 113564, guid: 655c3224150247642bcfb78462201182, type: 2}
+  greenparticle: {fileID: 0}
+  redparticle: {fileID: 0}
   propSpawn: {fileID: 1996762608}
+  dropfrequency: 10
+  nextdrop: 0
 --- !u!4 &220237699 stripped
 Transform:
   m_PrefabParentObject: {fileID: 400000, guid: c0896ff20c92041aa95f7526d367239a, type: 3}
@@ -9343,6 +9386,8 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 463001369}
+  - component: {fileID: 463001371}
+  - component: {fileID: 463001370}
   m_Layer: 0
   m_Name: HotAirBall1
   m_TagString: Untagged
@@ -9364,6 +9409,43 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 14
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &463001370
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 463001368}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3f8450f0782862c43b0d536f38d95034, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &463001371
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 463001368}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ownerId: 0
+  group: 0
+  OwnerShipWasTransfered: 0
+  prefixBackup: -1
+  synchronization: 3
+  onSerializeTransformOption: 3
+  onSerializeRigidBodyOption: 2
+  ownershipTransfer: 0
+  ObservedComponents:
+  - {fileID: 463001370}
+  ObservedComponentsFoldoutOpen: 1
+  viewIdField: 5
+  instantiationId: 5
+  currentMasterID: -1
+  isRuntimeInstantiated: 0
 --- !u!1 &465154510
 GameObject:
   m_ObjectHideFlags: 0
@@ -9976,7 +10058,7 @@ RectTransform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 477354357}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 308.5, y: 159.5, z: 0}
+  m_LocalPosition: {x: 277.5, y: 190.5, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 553169077}
@@ -11600,7 +11682,7 @@ RectTransform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 553169076}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -308.5, y: 159.5, z: 0}
+  m_LocalPosition: {x: -277.5, y: 190.5, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 603930263}
@@ -17485,7 +17567,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &854586462
 RectTransform:
   m_ObjectHideFlags: 0
@@ -18333,8 +18415,11 @@ MonoBehaviour:
   HPprop2: {fileID: 1000013191416304, guid: c48a3ebf277ae9f46bc06489f5850636, type: 2}
   Ballprop1: {fileID: 100000, guid: c20e20955b51aeb478a3cea9301948fc, type: 2}
   Ballprop2: {fileID: 111078, guid: 038c874aea1642e47baca1d90b641841, type: 2}
-  Ballprop3: {fileID: 113564, guid: 655c3224150247642bcfb78462201182, type: 2}
+  greenparticle: {fileID: 0}
+  redparticle: {fileID: 0}
   propSpawn: {fileID: 422493679}
+  dropfrequency: 10
+  nextdrop: 0
 --- !u!1 &890919094 stripped
 GameObject:
   m_PrefabParentObject: {fileID: 100070, guid: 10966efa816a44943bdcd42704fbbc2a, type: 3}
@@ -23469,6 +23554,8 @@ GameObject:
   m_Component:
   - component: {fileID: 1174519269}
   - component: {fileID: 1174519268}
+  - component: {fileID: 1174519271}
+  - component: {fileID: 1174519270}
   m_Layer: 8
   m_Name: platform1
   m_TagString: Untagged
@@ -23487,6 +23574,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a77d4826dac07f5428e5ea5234c78c8e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  speed: 0
 --- !u!4 &1174519269
 Transform:
   m_ObjectHideFlags: 0
@@ -23501,6 +23589,43 @@ Transform:
   m_Father: {fileID: 311019145}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1174519270
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1174519267}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3f8450f0782862c43b0d536f38d95034, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1174519271
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1174519267}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ownerId: 0
+  group: 0
+  OwnerShipWasTransfered: 0
+  prefixBackup: -1
+  synchronization: 3
+  onSerializeTransformOption: 3
+  onSerializeRigidBodyOption: 2
+  ownershipTransfer: 0
+  ObservedComponents:
+  - {fileID: 1174519270}
+  ObservedComponentsFoldoutOpen: 1
+  viewIdField: 2
+  instantiationId: 2
+  currentMasterID: -1
+  isRuntimeInstantiated: 0
 --- !u!1 &1175617957
 GameObject:
   m_ObjectHideFlags: 0
@@ -26936,7 +27061,7 @@ RectTransform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1314668120}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 308.5, y: 159.5, z: 0}
+  m_LocalPosition: {x: 277.5, y: 190.5, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 193369757}
@@ -28985,7 +29110,7 @@ RectTransform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1423286095}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 159.5, z: 0}
+  m_LocalPosition: {x: 0, y: 190.5, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 2105820388}
@@ -29223,6 +29348,8 @@ GameObject:
   m_Component:
   - component: {fileID: 1431023011}
   - component: {fileID: 1431023012}
+  - component: {fileID: 1431023014}
+  - component: {fileID: 1431023013}
   m_Layer: 0
   m_Name: HotAirBall0
   m_TagString: Untagged
@@ -29255,6 +29382,44 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7e7bb46d59630984f87f3b1b42c19a26, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  speed: 0
+--- !u!114 &1431023013
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1431023010}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3f8450f0782862c43b0d536f38d95034, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1431023014
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1431023010}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ownerId: 0
+  group: 0
+  OwnerShipWasTransfered: 0
+  prefixBackup: -1
+  synchronization: 3
+  onSerializeTransformOption: 3
+  onSerializeRigidBodyOption: 2
+  ownershipTransfer: 0
+  ObservedComponents:
+  - {fileID: 1431023013}
+  ObservedComponentsFoldoutOpen: 1
+  viewIdField: 4
+  instantiationId: 4
+  currentMasterID: -1
+  isRuntimeInstantiated: 0
 --- !u!1 &1437671242 stripped
 GameObject:
   m_PrefabParentObject: {fileID: 100014, guid: 757540823125d4f4c8b9b5b601308ecf, type: 3}
@@ -29401,7 +29566,7 @@ RectTransform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1455435285}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 308.5, y: 159.5, z: 0}
+  m_LocalPosition: {x: 277.5, y: 190.5, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -40865,7 +41030,7 @@ RectTransform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 2048902856}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 308.5, y: 159.5, z: 0}
+  m_LocalPosition: {x: 277.5, y: 190.5, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 1423286096}

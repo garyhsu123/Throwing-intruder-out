@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class dropprops : MonoBehaviour
+public class propdrop : MonoBehaviour
 {
 
     private Rigidbody hotair;
@@ -11,13 +11,13 @@ public class dropprops : MonoBehaviour
     public GameObject HPprop2;
     public GameObject Ballprop1;
     public GameObject Ballprop2;
-    public GameObject Ballprop3;
+   
     public GameObject greenparticle;
     public GameObject redparticle;
     public Transform propSpawn;
 
-    public GameObject mainchar;
-    UnityChanScript maincharbool;
+   
+   
     // public UnityChanScript invisibelball;
 
 
@@ -26,18 +26,15 @@ public class dropprops : MonoBehaviour
     public int dropfrequency = 50;
 
 
-
+ 
     int cnt = 0;
+    [SerializeField]
     private float nextdrop;
     private float visibleball;
     // Use this for initialization
     void Start()
     {
-        hotair = GetComponent<Rigidbody>();
-        speed = UnityEngine.Random.Range(300, 800);
-        speed = speed / 1000;
-
-        maincharbool = mainchar.GetComponent<UnityChanScript>();
+   
     }
 
     // Update is called once per frame
@@ -59,8 +56,10 @@ public class dropprops : MonoBehaviour
 
     void FixedUpdate()
     {
-
-       // dropOBJ();
+        if (PhotonNetwork.isMasterClient)
+        {
+            dropOBJ();
+        }
       //  invisibleBullet();
 
     }
@@ -69,29 +68,28 @@ public class dropprops : MonoBehaviour
 
     void dropOBJ()
     {
+       
         if (Time.time > nextdrop)
         {
             nextdrop = Time.time + dropfrequency;
             switch (cnt % 5)
             {
                 case 0:
-                    Instantiate(HPprop1, propSpawn.position, propSpawn.rotation);
+                    PhotonNetwork.Instantiate(HPprop1.name, propSpawn.position, propSpawn.rotation,0);
                     break;
                 case 1:
-                    Instantiate(HPprop2, propSpawn.position, propSpawn.rotation);
+                    PhotonNetwork.Instantiate(HPprop2.name, propSpawn.position, propSpawn.rotation, 0);
                     break;
                 case 2:
-                    Instantiate(Ballprop1, propSpawn.position, propSpawn.rotation);
+                    PhotonNetwork.Instantiate(Ballprop1.name, propSpawn.position, propSpawn.rotation, 0);
                     break;
                 case 3:
-                    Instantiate(Ballprop2, propSpawn.position, propSpawn.rotation);
+                    PhotonNetwork.Instantiate(Ballprop2.name, propSpawn.position, propSpawn.rotation, 0);
                     break;
-                case 4:
-                    Instantiate(Ballprop3, propSpawn.position, propSpawn.rotation);
-                    break;
+                
 
             }
-
+          
             cnt++;
         }
 
@@ -104,7 +102,7 @@ public class dropprops : MonoBehaviour
 
     }
 
-
+    /*
     void invisibleBullet()
     {
         GameObject[] bullet = GameObject.FindGameObjectsWithTag("bullet");
@@ -130,7 +128,7 @@ public class dropprops : MonoBehaviour
         
         }
     }
-
+    */
 
 
 }

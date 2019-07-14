@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-public class FirstPersonController : MonoBehaviour {
+using ExitGames.UtilityScripts;
+public class FirstPersonController : Photon.MonoBehaviour
+{
     enum JumpState
     {
         onFloor,
@@ -15,6 +17,7 @@ public class FirstPersonController : MonoBehaviour {
     public Transform bulletSpawn;
     public float bulletSpeed = 180;
     private GameObject _bullet;
+    private string other_player_bullet;
     #endregion
 
     #region PlayerComponent
@@ -28,7 +31,8 @@ public class FirstPersonController : MonoBehaviour {
     #endregion
 
     #region JumpParameter 
-    public float vertical_V_Max = 100;
+    [SerializeField]
+    private float vertical_V_Max = 100;
     private bool jumpClock = true;
     private Vector3 gravity_value = new Vector3(0, 0, 0);
     private float jump_vertical_V;
@@ -39,8 +43,8 @@ public class FirstPersonController : MonoBehaviour {
     #region ShootControl
     private Vector3 view_direction, bullet_direction;
     private float camRayLength = 10000f;
-    [SerializeField]
-    private string other_player_tag;
+   
+ 
     #endregion
 
     #region PlayerMovement
@@ -71,28 +75,109 @@ public class FirstPersonController : MonoBehaviour {
 
     #region GameManager  
     private GameController gameControl;
+    bool isInitialized = false;
     #endregion
+
+    #region PlatFormMove
+    // platform
+    public GameObject plat1;
+    public GameObject plat2;
+    platform_move platMove1;
+    platform_move platMove2;
+    Vector3 platSpeed = new Vector3(0f, 0f, 0f);
+    #endregion
+
     public bool isControllable = true;
 
+
+    void OnEnable()
+    {
+        if (!isInitialized)
+        {
+            Init();
+        }
+    }
+    void OnDisable()
+    {
+        PlayerRoomIndexing.instance.OnRoomIndexingChanged -= Refresh;
+    }
     private void Awake()
     {
         player = GetComponent<Rigidbody>();
         playerAudio = GetComponent<AudioSource>();
         floorMask = LayerMask.GetMask("floor");
         wallMask = LayerMask.GetMask("wall");
+        plat1 = GameObject.FindGameObjectWithTag("plat1");
+        plat2 = GameObject.FindGameObjectWithTag("plat2");
+        platMove1 = plat1.GetComponentInParent<platform_move>();
+        platMove2 = plat2.GetComponentInParent<platform_move>();
         gameControl = GameObject.FindGameObjectWithTag("GameManager").GetComponent<GameController>();
-        myRole = GameController.Instance.GetRole(ref bulletPrefab,ref healthSlider,ref other_player_tag);
+        Debug.Log("First Awake(): " + this.gameObject.name + " " + PhotonNetwork.player.GetRoomIndex());
+       
+        if (!isInitialized)
+        {
+            Init();
+        }
+        Debug.Log("Second Awake(): " + this.gameObject.name + " " + PhotonNetwork.player.GetRoomIndex());
+        //if (photonView.isMine)
+        //{
+        //    Debug.Log("is mine");
 
+        //    Debug.Log( "id "+PhotonNetwork.player.GetRoomIndex());
+        //}
 
     }
     // Use this for initialization
     void Start () {
         jump_vertical_V = vertical_V_Max;
-     
+        Debug.Log("Start(): "+this.gameObject.name+" " + PhotonNetwork.player.GetRoomIndex());
     }
-	
-	// Update is called once per frame
-	void Update () {
+
+    void Init()
+    {
+        if (!isInitialized && PlayerRoomIndexing.instance != null)
+        {
+            if (photonView.isMine)
+            {
+                Debug.Log("IsMine");
+                myRole = GameController.Instance.GetRole(this.gameObject,ref other_player_bullet,ref bulletPrefab, ref healthSlider);
+                PlayerRoomIndexing.instance.OnRoomIndexingChanged += Refresh;
+            }
+            else
+            {
+                Debug.Log("Not IsMine");
+                
+                PlayerRoomIndexing.instance.OnRoomIndexingChanged += Refresh;
+                Refresh();
+
+
+            }
+            
+            isInitialized = true;
+            
+        }
+    }
+
+    void Refresh()
+    {
+        Debug.Log("Call Refresh" + this.gameObject.name + " ");
+        int _index = PlayerRoomIndexing.instance.GetRoomIndex(photonView.owner);
+        Debug.Log("photonView owner Index: " + this.gameObject.name + " " + _index);
+        if (_index == -1)
+        {
+           
+          
+        }
+        else 
+        {
+            if(!photonView.isMine)
+                myRole = GameController.Instance.GetRole(this.gameObject, ref other_player_bullet,ref bulletPrefab, ref healthSlider, _index);  
+        }
+
+    }
+
+    // Update is called once per frame
+    void Update () {
         if (isControllable)
         {
             if (!isDead)//偵測是否還活著
@@ -121,8 +206,7 @@ public class FirstPersonController : MonoBehaviour {
                     {
                         //Debug.Log("fire");
                         Fire();
-                        gameControl.changeAttack();
-                        gameControl.resetTimer();
+                        photonView.RPC("ExchangeAttack",PhotonTargets.All,myRole);
                     }
                 }
                 else if (!gameControl.getenemylife())
@@ -130,7 +214,7 @@ public class FirstPersonController : MonoBehaviour {
                     if (Input.GetMouseButtonDown(0))//Fire()
                     {
 
-                        gameControl.changeAttack();
+                        gameControl.changeAttack(myRole);
 
                     }
                 }
@@ -161,13 +245,19 @@ public class FirstPersonController : MonoBehaviour {
                 if (Input.GetMouseButtonDown(0))//Fire()
                 {
 
-                    gameControl.changeAttack();
+                    gameControl.changeAttack(myRole);
 
                 }
             }
         }
     }
-
+    [PunRPC]
+    void ExchangeAttack(Role cur)
+    {
+        
+        gameControl.changeAttack(cur);
+        gameControl.resetTimer();
+    }
     void FixedUpdate()
     {
         if (!isDead)
@@ -224,11 +314,17 @@ public class FirstPersonController : MonoBehaviour {
 
     void Fire()
     {
-        var bullet = (GameObject)Instantiate(bulletPrefab, bulletSpawn.position, Quaternion.identity);
+
+    var bullet = PhotonNetwork.Instantiate(
+        bulletPrefab.name,
+        bulletSpawn.position,
+        Quaternion.identity, 0);
+    
+    //var bullet = (GameObject)Instantiate(bulletPrefab, bulletSpawn.position, Quaternion.identity);
 
 
-        //bullet.GetComponent<Rigidbody>().velocity = (bullet_direction.normalized + movement.normalized * 0.2f + platSpeed.normalized * 0.2f + jumpValue.normalized * 0.02f).normalized * bulletSpeed;
-        bullet.GetComponent<Rigidbody>().velocity = (bullet_direction.normalized + movement.normalized * 0.2f  + jumpValue.normalized * 0.02f).normalized * bulletSpeed;
+        bullet.GetComponent<Rigidbody>().velocity = (bullet_direction.normalized + movement.normalized * 0.2f + platSpeed.normalized * 0.2f + jumpValue.normalized * 0.02f).normalized * bulletSpeed;
+        //bullet.GetComponent<Rigidbody>().velocity = (bullet_direction.normalized + movement.normalized * 0.2f  + jumpValue.normalized * 0.02f).normalized * bulletSpeed;
 
     }
 
@@ -334,7 +430,7 @@ public class FirstPersonController : MonoBehaviour {
 
     void InvisibelBall()
     {
-        GameObject[] bullet = GameObject.FindGameObjectsWithTag("bullet");
+        GameObject[] bullet = GameObject.FindGameObjectsWithTag(bulletPrefab.tag);
         if (invisibelball)
         {
             if (bullet != null)
@@ -374,21 +470,26 @@ public class FirstPersonController : MonoBehaviour {
 
     void totalMove()
     {
-        //player.position += movement + platSpeed + jumpValue + gravity_value;
-        player.position += movement + jumpValue + gravity_value;
+        player.position += movement + platSpeed + jumpValue + gravity_value;
+        //player.position += movement + jumpValue + gravity_value;
     }
 
     void OnCollisionEnter(Collision collision)
     {
-        if (collision.gameObject.tag == other_player_tag)
-        {
+       
+            if (collision.gameObject.tag == other_player_bullet)
+            {
+                playerAudio.clip = GameController.Instance.hurtVoice;
+                playerAudio.Play();
+                PhotonNetwork.Destroy(collision.gameObject);
+                photonView.RPC("takeDamage",PhotonTargets.All,22);
+                //takeDamage(22);
 
-            takeDamage(22);
-
-            Destroy(collision.gameObject);
-        }
+            }
+        
     }
 
+    [PunRPC]
     void takeHealth(int amount)
     {
         currenthealth += amount;
@@ -400,18 +501,17 @@ public class FirstPersonController : MonoBehaviour {
 
     }
 
-
+    [PunRPC]
     void takeDamage(int amount)
     {
-
+        Debug.Log(" == = === Call take Damage "+this.gameObject.name);
         currenthealth -= amount;
         if (currenthealth <= healthMin)
         {
             currenthealth = healthMin;
         }
         healthSlider.value = currenthealth;
-        playerAudio.clip = GameController.Instance.hurtVoice;
-        playerAudio.Play();
+       
 
 
         damaged = true;
@@ -424,7 +524,127 @@ public class FirstPersonController : MonoBehaviour {
 
     void Death()
     {
+       
         gameControl.dead(myRole);
         isDead = true;
+    }
+
+    void OnTriggerStay(Collider other)
+    {
+        
+       
+        if (other.gameObject.CompareTag("plat1"))
+        {
+
+            platSpeed.x = platMove1.getSpeed();
+            //transform.SetParent(plat1.transform);
+
+        }
+        else if (other.gameObject.CompareTag("plat2"))
+        {
+
+            platSpeed.x = platMove2.getSpeed();
+            //transform.SetParent(plat2.transform);
+            //Debug.Log("stay");
+
+        }
+
+       
+            if (other.gameObject.CompareTag("invisible_ball"))
+            {
+            other.gameObject.SetActive(false);
+               
+                invisibelball = true;
+                if (photonView.isMine)
+                {
+                    playerAudio.clip = GameController.Instance.getpropVoice;
+
+                    playerAudio.Play(); //新加的
+                    Destroy(other.gameObject);
+                    PhotonNetwork.Destroy(other.gameObject);
+                }
+            }
+            if (other.gameObject.CompareTag("gravity_ball"))
+            {
+            other.gameObject.SetActive(false);
+           
+            if (photonView.isMine)
+                {
+                    GameObject[] bullet = GameObject.FindGameObjectsWithTag(bulletPrefab.tag);
+                    playerAudio.clip = GameController.Instance.getpropVoice;
+                    playerAudio.Play(); //新加的
+                    for (int i = 0; i < bullet.Length; i++)
+                    {
+                        //bullet[i].GetComponent<Rigidbody>().velocity*=2;   //速度加快功能
+
+                        bullet[i].GetComponent<Rigidbody>().AddForce(Physics.gravity * 1000);
+
+                    }
+                    Destroy(other.gameObject);
+                    PhotonNetwork.Destroy(other.gameObject);
+                }
+            }
+            //if (other.gameObject.CompareTag("score+"))
+            //{
+            //other.gameObject.SetActive(false);
+                
+            //    if (photonView.isMine)
+            //    {
+            //        playerAudio.clip = GameController.Instance.getpropVoice;
+            //        playerAudio.Play(); //新加的
+            //        Destroy(other.gameObject);
+            //        PhotonNetwork.Destroy(other.gameObject);
+            //    }
+            //}
+            if (other.gameObject.CompareTag("HP+"))
+            {
+                other.gameObject.SetActive(false);
+               
+                                    //takeHealth(13);
+                if (photonView.isMine)
+                {
+                    playerAudio.clip = GameController.Instance.getpropVoice;
+                    playerAudio.Play(); //新加的
+                    photonView.RPC("takeHealth", PhotonTargets.All, 13);
+                    Destroy(other.gameObject);
+                    PhotonNetwork.Destroy(other.gameObject);
+                }
+            }
+
+            if (other.gameObject.CompareTag("HP-"))
+            {
+                other.gameObject.SetActive(false);
+               
+                if (photonView.isMine)
+                {
+                    playerAudio.clip = GameController.Instance.hurtVoice;
+                    playerAudio.Play();
+                    photonView.RPC("takeDamage", PhotonTargets.All, 13);
+                    //takeDamage(13);
+                    Destroy(other.gameObject);
+                    PhotonNetwork.Destroy(other.gameObject);
+                }
+
+            }
+        
+    }
+    void OnTriggerExit(Collider other)
+    {
+      
+        if (other.gameObject.CompareTag("plat1"))
+        {
+
+            platSpeed.x = 0f;
+            //transform.SetParent(null);
+            //Debug.Log("exit");
+
+        }
+        else if (other.gameObject.CompareTag("plat2"))
+        {
+
+            platSpeed.x = 0f;
+            //transform.SetParent(null);
+            //Debug.Log("exit");
+        }
     }
 }

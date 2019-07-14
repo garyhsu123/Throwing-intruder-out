@@ -43,4 +43,8 @@ MonoBehaviour:
   - RequestForPickupTimes
   - TaggedPlayer
   - Set_player_num
+  - takeDamage
+  - ExchangeAttack
+  - takeHealth
+  - SetSpeed
   DisableAutoOpenWizard: 1

@@ -63,10 +63,19 @@ public partial class PhotonManager : Photon.PunBehaviour
         if (!PhotonNetwork.inRoom)
             return;
         //設定初始值
+        
         localPlayer = PhotonNetwork.Instantiate(
-           "Player Test",
-           new Vector3(0, 0.5f, 0),
-           Quaternion.identity, 0);
+        "Player Test",
+        new Vector3(0, 0.5f, 0),
+        Quaternion.identity, 0);
+        if (PhotonNetwork.room.PlayerCount == 1)
+        {
+            localPlayer.tag = "Player";
+        }
+        else
+        {
+            localPlayer.tag = "computer";
+        }
     }
 
 

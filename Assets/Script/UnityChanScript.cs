@@ -136,7 +136,7 @@ public class UnityChanScript : MonoBehaviour
                 {
                     //Debug.Log("fire");
                     Fire();
-                    gameControl.changeAttack();
+                    gameControl.changeAttack(Role.player);
                     gameControl.resetTimer();
                 }
             }else if(!gameControl.getenemylife())
@@ -144,7 +144,7 @@ public class UnityChanScript : MonoBehaviour
                 if (Input.GetMouseButtonDown(0))//Fire()
                 {
                    
-                    gameControl.changeAttack();
+                    gameControl.changeAttack(Role.computer);
                   
                 }
             }
@@ -175,7 +175,7 @@ public class UnityChanScript : MonoBehaviour
             if (Input.GetMouseButtonDown(0))//Fire()
             {
 
-                gameControl.changeAttack();
+                gameControl.changeAttack(Role.player);
 
             }
         }
